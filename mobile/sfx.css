@@ -1,0 +1,243 @@
+body {
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 0;
+  background-color: #1A1A1A;
+  color: #808080;
+  overflow-y: auto;
+}
+
+.pics-link {
+  position: fixed;
+  top: 3vh;
+  left: 10px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.vids-link {
+    position: fixed;
+    top: 3vh;
+    left: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.contacts-link,
+.home-link {
+  position: fixed;
+  top: 3vh;
+  right: 100px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.contacts-link {
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.portfolio-container {
+  margin-top: 8vh;
+  padding: 0 2vw;
+}
+
+.portfolio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.portfolio-item {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.portfolio-video {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background-color: black;
+  animation: fadeIn 2s ease forwards;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  height: 10%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  color: gray;
+  padding: 5px;
+  /* Изначально элементы видимы */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.video-controls.hidden {
+  opacity: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.control-button {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 7px;
+  color: gray;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  width: 50px;
+}
+
+.control-button:hover {
+  color: #ccc;
+}
+
+.progress-bar-container {
+  width: 97%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  border-radius: 10px;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background-color: #808080;
+  border-radius: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.buffer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.center-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  /* Изначально видны */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.center-button.hidden {
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 26, 26, 0.8);
+  z-index: 1000;
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInModal 0.3s ease-out forwards;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #333;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+  animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards;
+  border-radius: 10px;
+  color: #f2f2f2;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #f2f2f2;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: white;
+}
+
+.contact-info {
+  text-align: center;
+  line-height: 1.6;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

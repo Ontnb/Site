@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ontn.art</title>
+    <link rel="stylesheet" href="2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <!-- Кнопки навигации -->
+    <a href="vids.html" class="vids-link">Vids</a>
+    <a href="sfx.html" class="sfx-link">SFX</a>
+    <a href="index.html" class="home-link">Home</a>
+    <button class="contacts-link" id="open-contacts">Contacts</button>
+
+    <main class="portfolio-container">
+       <div class="portfolio-scroll-wrapper">
+        <div class="portfolio-scroll">
+
+            <div class="portfolio-item">
+                <div class="video-container">
+                    <video class="portfolio-video" preload="metadata" data-src="9/1.mp4" poster="9/1.webp">
+                        Ваш браузер не поддерживает тег video.
+                    </video>
+                    <div class="video-controls">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="controls">
+                            <button class="control-button play-pause-button"><i class="fas fa-play"></i></button>
+                            <span class="time-display">0:00 / 0:00</span>
+                            <div class="volume-controls">
+                                <button class="control-button volume-button"><i class="fas fa-volume-up"></i></button>
+                                <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                            </div>
+                            <button class="control-button fullscreen-button"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="portfolio-item">
+                <img src="9/2.webp" alt="2.webp">
+            </div>
+    
+            <div class="portfolio-item">
+                <img src="9/3.webp" alt="3.webp">
+            </div>
+    
+            <div class="portfolio-item">
+                <img src="9/4.webp" alt="4.webp">
+            </div>
+    
+        </div>
+       </div>
+       <div class="scrollbar-container">
+            <div class="scrollbar">
+                <div class="scrollbar-thumb"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно контактов -->
+    <div id="contacts-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="contact-info">
+                <p>Tg: @onton_b</p>
+                <p>Ig: @ontn_b</p>
+                <p>Email: ontn_b@bk.ru</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="2.js"></script>
+</body>
+</html>

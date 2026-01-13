@@ -1,0 +1,359 @@
+/* Общие стили для body */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    background-color: #1A1A1A;
+    color: #808080;
+    overflow-x: hidden; /* Предотвращаем горизонтальную прокрутку */
+}
+
+/* Плавная прокрутка */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Nav container */
+.nav-container {
+    position: fixed;
+    top: 3vh;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px; /* Add some padding for better spacing */
+    z-index: 10;
+}
+
+/* Ссылка "Download All" */
+.download-all-link {
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: inherit;
+    cursor: pointer;
+    margin-left: 10vw; /* Можно настроить значение */
+}
+
+.download-all-link:hover {
+    color: #fff;
+}
+
+/* Общие стили для ссылок на контакты и главную страницу */
+.contacts-link,
+.home-link {
+    position: fixed; /* Фиксируем ссылки на экране */
+    top: 3vh; /* Отступ от верхнего края экрана (3% от высоты viewport) */
+    color: #808080; /* Светло-серый цвет текста */
+    text-decoration: none; /* Убираем подчеркивание */
+    font-weight: bold; /* Жирный шрифт */
+    z-index: 10; /* Помещаем ссылки поверх других элементов */
+}
+
+/* Стили для ссылки на контакты */
+.contacts-link {
+    right: 10px; /* Отступ от правого края экрана */
+    background: none; /* Убираем фон */
+    border: none; /* Убираем рамку */
+    padding: 0; /* Убираем внутренние отступы */
+    font-family: 'Courier New', Courier, monospace; /* Наследуем шрифт от body */
+    font-size: inherit; /* Наследуем размер шрифта от body */
+    cursor: pointer; /* Изменяем курсор на "указатель" */
+}
+
+/* Стили для ссылки на главную страницу */
+.home-link {
+    right: 100px; /* Отступ от правого края экрана */
+}
+
+/* Контейнер для портфолио */
+.portfolio-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    padding: 20px; /* Добавляем отступы */
+    margin-top: 6vh; /* Отступ от кнопок навигации */
+}
+
+/* Сетка портфолио */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Адаптивная сетка */
+    gap: 10px;
+    width: 100%;
+    max-width: 1200px; /* Ограничиваем максимальную ширину */
+    justify-content: start; /* Выравнивание по горизонтали (слева) */
+    align-items: start;    /* Выравнивание по вертикали (сверху) */
+}
+
+/* Элемент портфолио */
+.portfolio-item {
+    border-radius: 10px;
+    overflow: hidden; /* Обрезаем контент, выходящий за границы */
+    position: relative; /* Для позиционирования подписи */
+    cursor: pointer; /* Курсор в виде руки */
+    aspect-ratio: 1 / 1; /* Соотношение сторон 1:1 для квадрата */
+}
+
+/* Изображение в элементе портфолио */
+.portfolio-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Заполняем контейнер, обрезая при необходимости */
+    display: block; /* Убираем отступ снизу у inline элементов */
+    transition: transform 0.3s ease; /* Плавное масштабирование */
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+}
+
+/* Подпись к фото (скрыта по умолчанию) */
+.photo-caption {
+    display: none; /* Скрываем подпись полностью */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    margin: 0;
+    font-size: 0.9em;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Показываем подпись при наведении */
+.portfolio-item:hover img {
+    transform: scale(1.05);
+}
+
+.portfolio-item:hover .photo-caption {
+    opacity: 1;
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(26, 26, 26, 0.8);
+    z-index: 1000;
+    overflow: auto;
+    justify-content: center;
+    align-items: center;
+    animation: fadeInModal 0.3s ease-out forwards;
+}
+
+/* Стили для контента модального окна */
+.modal-content {
+    position: relative;
+    background-color: #333;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards;
+    border-radius: 10px;
+    color: #f2f2f2;
+}
+
+/* Стили для кнопки закрытия модального окна */
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #f2f2f2;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.2s ease;
+}
+
+/* Стили для кнопки закрытия модального окна при наведении */
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Стили для контактной информации */
+.contact-info {
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* Анимации */
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 0.8; }
+}
+
+/* Анимации */
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Стили для полноэкранного просмотра */
+.fullscreen-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Предотвращаем прокрутку фона */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    touch-action: none; /* Отключаем стандартные жесты */
+}
+
+.fullscreen-overlay.open {
+    opacity: 1;
+}
+
+#fullscreen-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: opacity 0.3s ease; /* Для плавного перелистывания */
+    opacity: 1;
+    touch-action: pan-y pan-x; /* Разрешаем прокрутку изображения */
+}
+
+#fullscreen-image.fade-out {
+    opacity: 0;
+}
+
+/* Добавляем стили для масштабирования (активное состояние) */
+#fullscreen-image.zoomed {
+    cursor: grab; /* Меняем курсор */
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+    z-index: 2001;
+    opacity: 0.3; /* Полупрозрачность по умолчанию */
+    /* Убираем стили по умолчанию, чтобы область клика была только вокруг текста */
+    background: none;
+    border: none;
+    padding: 0;
+
+    transition: opacity 0.3s ease;
+}
+
+.nav-button:hover {
+  opacity: 0.5; /* Более видимые при наведении */
+}
+
+
+/* Добавляем отдельный класс для расширенной области клика */
+.nav-button-area {
+    width: 10%;  /* Расширяем область клика до 15% ширины экрана */
+    height: 30%; /* На всю высоту экрана */
+    display: flex;        /* Используем flexbox для центрирования */
+    justify-content: center; /* Центрируем горизонтально */
+    align-items: center;    /* Выравниваем вертикально */
+}
+
+#prev-button {
+    left: 0;
+}
+
+#next-button {
+    right: 0;
+}
+
+.download-full-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 2002; /* Общий порядок наложения аналогично кнопке закрытия */
+    background: none;
+    border: none;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+/* Расширяем область клика с помощью псевдоэлемента */
+.download-full-button::before {
+    content: '';
+    position: absolute;
+    top: -20px; /* Расширяем область клика вверх */
+    right: -20px; /* Расширяем область клика вправо */
+    bottom: -20px; /* Расширяем область клика вниз */
+    left: -20px; /* Расширяем область клика влево */
+    background: transparent; /* Прозрачный фон */
+    cursor: pointer; /* Курсор в виде руки */
+}
+
+.download-full-button:hover {
+    color: #ddd;
+}
+
+
+
+.close-full-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+    z-index: 2002; /* Чтобы крестик был над всеми остальными элементами */
+    background: none;
+    border: none;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+/* Расширяем область клика с помощью псевдоэлемента */
+.close-full-button::before {
+    content: '';
+    position: absolute;
+    top: -20px; /* Расширяем область клика вверх */
+    right: -20px; /* Расширяем область клика вправо */
+    bottom: -20px; /* Расширяем область клика вниз */
+    left: -20px; /* Расширяем область клика влево */
+    background: transparent; /* Прозрачный фон */
+    cursor: pointer; /* Курсор в виде руки */
+}
+
+.close-full-button:hover {
+    color: #ddd;
+}

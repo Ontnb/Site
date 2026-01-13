@@ -1,0 +1,228 @@
+/* Общие стили для всего body */
+body {
+    font-family: 'Courier New', Courier, monospace; /* Устанавливаем шрифт Courier New или Courier (если нет первого), monospace - запасной */
+    margin: 0; /* Убираем внешние отступы */
+    padding: 0; /* Убираем внутренние отступы */
+    background-color: #1A1A1A; /* Темно-серый фон */
+    color: #808080; /* Светло-серый цвет текста */
+    overflow-y: hidden; /* Всегда скрываем вертикальную полосу прокрутки */
+}
+
+/* Плавная прокрутка для ссылок-якорей */
+html {
+    scroll-behavior: smooth;
+}
+
+.vids-link {
+  position: fixed;
+  top: 3vh;
+  left: 10px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.sfx-link {
+    position: fixed;
+    top: 3vh;
+    left: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* Общие стили для ссылок на контакты и главную страницу */
+.contacts-link,
+.home-link {
+    position: fixed; /* Фиксируем ссылки на экране */
+    top: 3vh; /* Отступ от верхнего края экрана (3% от высоты viewport) */
+    right: 100px;
+    color: #808080; /* Светло-серый цвет текста */
+    text-decoration: none; /* Убираем подчеркивание */
+    font-weight: bold; /* Жирный шрифт */
+    z-index: 10; /* Помещаем ссылки поверх других элементов */
+}
+
+/* Стили для ссылки на контакты */
+.contacts-link {
+    right: 10px; /* Отступ от правого края экрана */
+    background: none; /* Убираем фон */
+    border: none; /* Убираем рамку */
+    padding: 0; /* Убираем внутренние отступы */
+    font-family: 'Courier New', Courier, monospace; /* Наследуем шрифт от body */
+    font-size: inherit; /* Наследуем размер шрифта от body */
+    cursor: pointer; /* Изменяем курсор на "указатель" */
+}
+
+/* Стили для основного контента (main) */
+main {
+    display: flex; /* Используем flexbox для выравнивания контента */
+    align-items: center; /* Выравниваем элементы по вертикали по центру */
+    justify-content: center; /* Выравниваем элементы по горизонтали по центру */
+    min-height: calc(100vh - 200px); /* Минимальная высота: высота viewport минус 200px */
+    position: relative; /* Относительное позиционирование для дочерних элементов */
+    padding-top: 0px; /* Убираем верхний отступ */
+    padding-bottom: 8vh; /* Отступ снизу (8% от высоты viewport) */
+}
+
+/* Контейнер для галереи */
+.gallery-container {
+    width: 100%; /* Ширина 100% */
+    display: flex; /* Используем flexbox */
+    overflow-x: hidden; /* Скрываем горизонтальную полосу прокрутки */
+}
+
+/* Обертка для скролла галереи */
+.gallery-scroll-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Контейнер для прокрутки галереи */
+.gallery-scroll {
+    display: grid; /* Используем grid layout для расположения элементов */
+    grid-template-columns: repeat(19, 1fr); /* 19 колонок одинаковой ширины */
+    grid-template-rows: repeat(2, auto); /* 2 строки высотой auto */
+    overflow-x: scroll; /* Включаем горизонтальную прокрутку */
+    -ms-overflow-style: none; /* Скрываем полосу прокрутки в IE/Edge */
+    scrollbar-width: none; /* Скрываем полосу прокрутки в Firefox */
+    padding: 1vh; /* Внутренний отступ (1% от высоты viewport) */
+    align-items: start; /* Выравниваем элементы по верхнему краю */
+    margin-top: 6vh; /* Внешний отступ сверху (6% от высоты viewport) */
+    gap: 2vw; /* Отступ между элементами сетки (2% от ширины viewport) */
+    scroll-behavior: smooth; /* Плавная прокрутка */
+    overscroll-behavior: contain; /* Предотвращаем прокрутку основной страницы при достижении конца галереи */
+}
+
+/* Стили для элемента галереи */
+.gallery-item {
+    overflow: hidden; /* Обрезаем контент, выходящий за границы */
+    width: 38vh; /* Ширина элемента (40% от высоты viewport) */
+    height: auto; /* Высота определяется автоматически */
+    border-radius: 10px; /* Закругляем углы */
+    transition: box-shadow 0.3s ease; /* Плавный эффект тени */
+    padding-bottom: 0px; /* Убираем нижний отступ */
+    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+}
+
+/* Стили для изображения в элементе галереи */
+.gallery-item img {
+    width: 100%; /* Ширина 100% */
+    height: 100%; /* Высота 100% */
+    object-fit: cover; /* Масштабируем изображение, сохраняя пропорции и обрезая */
+    border-radius: 10px; /* Закругляем углы */
+    transition: box-shadow 0.3s ease; /* Плавный эффект тени */
+    opacity: 0; /* Изначально делаем изображение невидимым */
+    animation: fadeIn 4s ease forwards; /* Анимация плавного появления */
+}
+
+/* Стили для ссылки-обертки вокруг изображения */
+.gallery-link {
+    display: block; /* Превращаем ссылку в блочный элемент */
+    width: 100%; /* Ширина 100% */
+    height: 100%; /* Высота 100% */
+    text-decoration: none; /* Убираем подчеркивание */
+    color: inherit; /* Наследуем цвет текста */
+    transition: transform 0.3s ease; /* Плавный эффект масштабирования */
+}
+
+/* Эффект при наведении на ссылку */
+.gallery-link:hover {
+    transform: scale(1.05); /* Увеличиваем масштаб на 5% */
+}
+
+/* Эффект при клике на ссылку */
+.gallery-link:active {
+    transform: scale(0.95); /* Уменьшаем масштаб на 5% */
+}
+
+/* Анимация плавного появления (fadeIn) */
+@keyframes fadeIn {
+    from { opacity: 0; } /* Начальное состояние: прозрачность 0 */
+    to { opacity: 1; } /* Конечное состояние: прозрачность 1 */
+}
+
+/* Стили для подписи к фотографии */
+.photo-caption {
+    text-align: left; /* Выравниваем текст по левому краю */
+    color: #999; /* Светло-серый цвет текста */
+    margin: 5px 25px; /* Отступы сверху/снизу 5px, слева/справа 25px */
+    font-size: 0.9em; /* Размер шрифта: 90% от родительского */
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* Скрываем модальное окно */
+    position: fixed; /* Фиксируем на экране */
+    top: 0; /* Отступ от верхнего края экрана */
+    left: 0; /* Отступ от левого края экрана */
+    width: 100%; /* Ширина 100% */
+    height: 100%; /* Высота 100% */
+    background-color: rgba(26, 26, 26, 0.8); /* Полупрозрачный темно-серый фон */
+    z-index: 1000; /* Помещаем модальное окно поверх других элементов */
+    overflow: auto; /* Добавляем прокрутку, если контент не помещается */
+    justify-content: center; /* Выравниваем по центру по горизонтали */
+    align-items: center; /* Выравниваем по центру по вертикали */
+    animation: fadeInModal 0.3s ease-out forwards; /* Анимация плавного появления */
+}
+
+/* Стили для контента модального окна */
+.modal-content {
+    position: relative; /* Относительное позиционирование */
+    background-color: #333; /* Темно-серый фон */
+    margin: 15% auto; /* Отступ сверху/снизу 15%, авто отступ слева/справа (для центрирования) */
+    padding: 20px; /* Внутренний отступ */
+    border: 1px solid #888; /* Рамка */
+    width: 80%; /* Ширина 80% */
+    max-width: 600px; /* Максимальная ширина 600px */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /* Тень */
+    animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards; /* Анимация плавного появления со смещением */
+    border-radius: 10px; /* Закругляем углы */
+    color: #f2f2f2; /* Белый цвет текста */
+}
+
+/* Стили для кнопки закрытия модального окна */
+.close-button {
+    position: absolute; /* Абсолютное позиционирование */
+    top: 0; /* Отступ от верхнего края */
+    right: 0; /* Отступ от правого края */
+    color: #f2f2f2; /* Белый цвет текста */
+    font-size: 28px; /* Размер шрифта */
+    font-weight: bold; /* Жирный шрифт */
+    cursor: pointer; /* Курсор в виде указателя */
+    padding: 10px; /* Внутренний отступ */
+    transition: color 0.2s ease; /* Плавный эффект изменения цвета */
+}
+
+/* Эффекты при наведении и фокусировке на кнопке закрытия */
+.close-button:hover,
+.close-button:focus {
+    color: white; /* Белый цвет текста */
+    text-decoration: none; /* Убираем подчеркивание */
+    cursor: pointer; /* Курсор в виде указателя */
+}
+
+/* Стили для контактной информации */
+.contact-info {
+    text-align: center; /* Выравниваем текст по центру */
+    line-height: 1.6; /* Межстрочный интервал */
+}
+
+/* Анимация плавного появления модального окна (fadeInModal) */
+@keyframes fadeInModal {
+    from { opacity: 0; } /* Начальное состояние: прозрачность 0 */
+    to { opacity: 0.8; } /* Конечное состояние: прозрачность 0.8 */
+}
+
+/* Анимация плавного появления контента (slideIn) */
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; } /* Начальное состояние: смещение вверх на 50px, прозрачность 0 */
+    to { transform: translateY(0); opacity: 1; } /* Конечное состояние: смещение 0, прозрачность 1 */
+}
+
+/* Скрытие полосы прокрутки для body в WebKit браузерах */
+body::-webkit-scrollbar {
+    width: 0;
+}

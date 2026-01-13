@@ -1,0 +1,127 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset204 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang1049 1. \'d3\'f1\'f2\'e0\'ed\'ee\'e2\'ea\'e0 Python\par
+\'d3\'e1\'e5\'e4\'e8\'f2\'e5\'f1\'fc, \'f7\'f2\'ee Python \'f3\'f1\'f2\'e0\'ed\'ee\'e2\'eb\'e5\'ed \'ed\'e0 \'e2\'e0\'f8\'e5\'ec \'ea\'ee\'ec\'ef\'fc\'fe\'f2\'e5\'f0\'e5. \'c2\'fb \'ec\'ee\'e6\'e5\'f2\'e5 \'f1\'ea\'e0\'f7\'e0\'f2\'fc \'e5\'e3\'ee \'f1 \'ee\'f4\'e8\'f6\'e8\'e0\'eb\'fc\'ed\'ee\'e3\'ee \'f1\'e0\'e9\'f2\'e0: {{\field{\*\fldinst{HYPERLINK https://www.python.org/ }}{\fldrslt{https://www.python.org/\ul0\cf0}}}}\f0\fs22 . \'cf\'ee\'f1\'eb\'e5 \'f3\'f1\'f2\'e0\'ed\'ee\'e2\'ea\'e8 \'ef\'f0\'ee\'e2\'e5\'f0\'fc\'f2\'e5 \'e2\'e5\'f0\'f1\'e8\'fe Python \'e2 \'f2\'e5\'f0\'ec\'e8\'ed\'e0\'eb\'e5 \'e8\'eb\'e8 \'ea\'ee\'ec\'e0\'ed\'e4\'ed\'ee\'e9 \'f1\'f2\'f0\'ee\'ea\'e5:\par
+\b python --version\b0\par
+\'c5\'f1\'eb\'e8 \'e2\'fb \'e2\'e8\'e4\'e8\'f2\'e5 \'e2\'e5\'f0\'f1\'e8\'fe (\'ed\'e0\'ef\'f0\'e8\'ec\'e5\'f0, Python 3.8.5), \'e7\'ed\'e0\'f7\'e8\'f2, Python \'f3\'f1\'f2\'e0\'ed\'ee\'e2\'eb\'e5\'ed \'ef\'f0\'e0\'e2\'e8\'eb\'fc\'ed\'ee.\par
+\par
+2. \'d1\'ee\'e7\'e4\'e0\'ed\'e8\'e5 \'f1\'ea\'f0\'e8\'ef\'f2\'e0\par
+\'d1\'ee\'e7\'e4\'e0\'e9\'f2\'e5 \'f4\'e0\'e9\'eb \'f1 \'ed\'e0\'e7\'e2\'e0\'ed\'e8\'e5\'ec generate_html.py. \'dd\'f2\'ee \'e8 \'e1\'f3\'e4\'e5\'f2 \'ed\'e0\'f8 \'f1\'ea\'f0\'e8\'ef\'f2. \'ce\'f2\'ea\'f0\'ee\'e9\'f2\'e5 \'fd\'f2\'ee\'f2 \'f4\'e0\'e9\'eb \'e2 \'eb\'fe\'e1\'ee\'ec \'f2\'e5\'ea\'f1\'f2\'ee\'e2\'ee\'ec \'f0\'e5\'e4\'e0\'ea\'f2\'ee\'f0\'e5 \'e8 \'e2\'f1\'f2\'e0\'e2\'fc\'f2\'e5 \'f2\'f3\'e4\'e0 \'f1\'eb\'e5\'e4\'f3\'fe\'f9\'e8\'e9 \'ea\'ee\'e4:\par
+\par
+import os\par
+# \'cf\'f3\'f2\'fc \'ea \'ef\'e0\'ef\'ea\'e5 \'f1 \'f4\'ee\'f2\'ee\'e3\'f0\'e0\'f4\'e8\'ff\'ec\'e8\par
+photo_dir = os.path.join(os.getcwd(), '2')\par
+# \'cf\'f3\'f2\'fc \'ea \'e2\'fb\'f5\'ee\'e4\'ed\'ee\'ec\'f3 HTML-\'f4\'e0\'e9\'eb\'f3\par
+output_file = os.path.join(os.getcwd(), 'output.html')\par
+# \'c4\'ee\'ef\'f3\'f1\'f2\'e8\'ec\'fb\'e5 \'f0\'e0\'f1\'f8\'e8\'f0\'e5\'ed\'e8\'ff \'f4\'e0\'e9\'eb\'ee\'e2\par
+allowed_extensions = ['.webp', '.webm', '.jpg', '.mp4']\par
+# \'d7\'f2\'e5\'ed\'e8\'e5 \'f4\'e0\'e9\'eb\'ee\'e2 \'e2 \'ef\'e0\'ef\'ea\'e5\par
+try:\par
+    files = os.listdir(photo_dir)\par
+except Exception as e:\par
+    print(f'\'ce\'f8\'e8\'e1\'ea\'e0 \'f7\'f2\'e5\'ed\'e8\'ff \'ef\'e0\'ef\'ea\'e8: \{e\}')\par
+    exit()\par
+# \'d4\'e8\'eb\'fc\'f2\'f0\'e0\'f6\'e8\'ff \'f4\'e0\'e9\'eb\'ee\'e2 \'ef\'ee \'e4\'ee\'ef\'f3\'f1\'f2\'e8\'ec\'fb\'ec \'f0\'e0\'f1\'f8\'e8\'f0\'e5\'ed\'e8\'ff\'ec\par
+image_files = [file for file in files if any(file.endswith(ext) for ext in allowed_extensions)]\par
+# \'c3\'e5\'ed\'e5\'f0\'e0\'f6\'e8\'ff HTML-\'ea\'ee\'e4\'e0\par
+html_content = '''\par
+<!DOCTYPE html>\par
+<html lang="ru">\par
+<head>\par
+    <meta charset="UTF-8">\par
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit: cover">\par
+    <title>ontn.art</title>\par
+    <link rel="stylesheet" href="disk.css">\par
+    <link rel="preconnect" href="https://fonts.googleapis.com">\par
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\par
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@400;700&display=swap" rel="stylesheet">\par
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />\par
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script> <!-- \'c4\'ee\'e1\'e0\'e2\'eb\'e5\'ed\'e0 \'f1\'f1\'fb\'eb\'ea\'e0 \'ed\'e0 JSZip -->\par
+</head>\par
+<body>\par
+    <!-- \'ca\'ed\'ee\'ef\'ea\'e8 \'ed\'e0\'e2\'e8\'e3\'e0\'f6\'e8\'e8 -->\par
+    <div class="nav-container">\par
+        <button class="download-all-link" id="download-all">Download ZIP</button>\par
+        <a href="../index.html" class="home-link">Home</a>\par
+        <button class="contacts-link" id="open-contacts">Contacts</button>\par
+    </div>\par
+    <main class="portfolio-container">\par
+        <div class="portfolio-grid">\par
+'''\par
+# \'c4\'ee\'e1\'e0\'e2\'eb\'ff\'e5\'ec \'ef\'f3\'f2\'e8 \'ea \'f4\'e0\'e9\'eb\'e0\'ec \'e2 HTML\par
+for index, file in enumerate(image_files):\par
+    file_extension = os.path.splitext(file)[1].lower()  # \'cf\'ee\'eb\'f3\'f7\'e0\'e5\'ec \'f0\'e0\'f1\'f8\'e8\'f0\'e5\'ed\'e8\'e5 \'f4\'e0\'e9\'eb\'e0\par
+    if file_extension in ['.webp', '.jpg']:\par
+        html_content += f'''\par
+            <div class="portfolio-item">\par
+                <img src="2/\{file\}" alt="Photo \{index + 1\}" data-index="\{index\}">\par
+                <p class="photo-caption"><!-- \'cf\'ee\'e4\'ef\'e8\'f1\'fc --></p>\par
+            </div>\par
+        '''\par
+    elif file_extension == '.webm':\par
+        html_content += f'''\par
+            <div class="portfolio-item">\par
+                <video controls>\par
+                    <source src="2/\{file\}" type="video/webm">\par
+                    \'c2\'e0\'f8 \'e1\'f0\'e0\'f3\'e7\'e5\'f0 \'ed\'e5 \'ef\'ee\'e4\'e4\'e5\'f0\'e6\'e8\'e2\'e0\'e5\'f2 \'e2\'e8\'e4\'e5\'ee.\par
+                </video>\par
+                <p class="photo-caption"><!-- \'cf\'ee\'e4\'ef\'e8\'f1\'fc --></p>\par
+            </div>\par
+        '''\par
+    elif file_extension == '.mp4':\par
+        html_content += f'''\par
+            <div class="portfolio-item">\par
+                <video controls>\par
+                    <source src="2/\{file\}" type="video/mp4">\par
+                    \'c2\'e0\'f8 \'e1\'f0\'e0\'f3\'e7\'e5\'f0 \'ed\'e5 \'ef\'ee\'e4\'e4\'e5\'f0\'e6\'e8\'e2\'e0\'e5\'f2 \'e2\'e8\'e4\'e5\'ee.\par
+                </video>\par
+                <p class="photo-caption"><!-- \'cf\'ee\'e4\'ef\'e8\'f1\'fc --></p>\par
+            </div>\par
+        '''\par
+# \'c7\'e0\'e2\'e5\'f0\'f8\'e0\'e5\'ec HTML-\'ea\'ee\'e4\par
+html_content += '''\par
+        </div>\par
+    </main>\par
+    <!-- \'cc\'ee\'e4\'e0\'eb\'fc\'ed\'ee\'e5 \'ee\'ea\'ed\'ee \'ea\'ee\'ed\'f2\'e0\'ea\'f2\'ee\'e2 -->\par
+    <div id="contacts-modal" class="modal">\par
+        <div class="modal-content">\par
+            <span class="close-button">&times;</span>\par
+            <div class="contact-info">\par
+                <p>Tg: @onton_b</p>\par
+                <p>Ig: @onton_b</p>\par
+                <p>Email: ontn_b@bk.ru</p>\par
+            </div>\par
+        </div>\par
+    </div>\par
+    <!-- \'cf\'ee\'eb\'ed\'ee\'fd\'ea\'f0\'e0\'ed\'ed\'fb\'e9 \'ef\'f0\'ee\'f1\'ec\'ee\'f2\'f0 -->\par
+    <div id="fullscreen-overlay" class="fullscreen-overlay">\par
+        <button id="download-full" class="download-full-button"><i class="fas fa-download"></i></button>\par
+        <button id="close-button" class="close-full-button">&times;</button>\par
+        <div id="prev-button" class="nav-button nav-button-area">&lt;</div>\par
+        <img id="fullscreen-image" src="" alt="Full Size Image">\par
+        <div id="next-button" class="nav-button nav-button-area">&gt;</div>\par
+    </div>\par
+    <script src="disk.js"></script>\par
+</body>\par
+</html>\par
+'''\par
+# \'c7\'e0\'ef\'e8\'f1\'fc HTML-\'ea\'ee\'e4\'e0 \'e2 \'f4\'e0\'e9\'eb\par
+try:\par
+    with open(output_file, 'w', encoding='utf-8') as file:\par
+        file.write(html_content)\par
+    print(f'HTML-\'f4\'e0\'e9\'eb \'f3\'f1\'ef\'e5\'f8\'ed\'ee \'f1\'ee\'e7\'e4\'e0\'ed: \{output_file\}')\par
+except Exception as e:\par
+    print(f'\'ce\'f8\'e8\'e1\'ea\'e0 \'e7\'e0\'ef\'e8\'f1\'e8 \'f4\'e0\'e9\'eb\'e0: \{e\}')\par
+\par
+3. \'c7\'e0\'ef\'f3\'f1\'ea \'f1\'ea\'f0\'e8\'ef\'f2\'e0\par
+\'ce\'f2\'ea\'f0\'ee\'e9\'f2\'e5 \'f2\'e5\'f0\'ec\'e8\'ed\'e0\'eb (\'e8\'eb\'e8 \'ea\'ee\'ec\'e0\'ed\'e4\'ed\'f3\'fe \'f1\'f2\'f0\'ee\'ea\'f3). \'cf\'e5\'f0\'e5\'e9\'e4\'e8\'f2\'e5 \'e2 \'ef\'e0\'ef\'ea\'f3, \'e3\'e4\'e5 \'eb\'e5\'e6\'e8\'f2 \'e2\'e0\'f8 \'f1\'ea\'f0\'e8\'ef\'f2:\par
+\b cd \'ef\'f3\'f2\'fc/\'ea/\'e2\'e0\'f8\'e5\'e9/\'ef\'e0\'ef\'ea\'e5/\b0\par
+\'c7\'e0\'ef\'f3\'f1\'f2\'e8\'f2\'e5 \'f1\'ea\'f0\'e8\'ef\'f2:\par
+python generate_html.py\par
+\'c5\'f1\'eb\'e8 \'e2\'f1\'b8 \'f1\'e4\'e5\'eb\'e0\'ed\'ee \'ef\'f0\'e0\'e2\'e8\'eb\'fc\'ed\'ee, \'e2 \'ea\'ee\'f0\'ed\'e5\'e2\'ee\'e9 \'ef\'e0\'ef\'ea\'e5 \'ef\'f0\'ee\'e5\'ea\'f2\'e0 \'ef\'ee\'ff\'e2\'e8\'f2\'f1\'ff \'f4\'e0\'e9\'eb output.html. \'ce\'f2\'ea\'f0\'ee\'e9\'f2\'e5 \'e5\'e3\'ee \'e2 \'e1\'f0\'e0\'f3\'e7\'e5\'f0\'e5, \'e8 \'e2\'fb \'f3\'e2\'e8\'e4\'e8\'f2\'e5 \'e3\'e0\'eb\'e5\'f0\'e5\'fe \'f1 \'e2\'e0\'f8\'e8\'ec\'e8 \'f4\'ee\'f2\'ee\'e3\'f0\'e0\'f4\'e8\'ff\'ec\'e8.\par
+\par
+4. \'ce\'e1\'ed\'ee\'e2\'eb\'e5\'ed\'e8\'e5 \'f4\'ee\'f2\'ee\'e3\'f0\'e0\'f4\'e8\'e9\par
+\'c5\'f1\'eb\'e8 \'e2\'fb \'e4\'ee\'e1\'e0\'e2\'e8\'f2\'e5 \'ed\'ee\'e2\'fb\'e5 \'f4\'ee\'f2\'ee\'e3\'f0\'e0\'f4\'e8\'e8 \'e2 \'ef\'e0\'ef\'ea\'f3 2, \'ef\'f0\'ee\'f1\'f2\'ee \'f1\'ed\'ee\'e2\'e0 \'e7\'e0\'ef\'f3\'f1\'f2\'e8\'f2\'e5 \'f1\'ea\'f0\'e8\'ef\'f2, \'e8 \'ee\'ed \'ee\'e1\'ed\'ee\'e2\'e8\'f2 HTML-\'f4\'e0\'e9\'eb, \'e4\'ee\'e1\'e0\'e2\'e8\'e2 \'ed\'ee\'e2\'fb\'e5 \'e8\'e7\'ee\'e1\'f0\'e0\'e6\'e5\'ed\'e8\'ff.\par
+}
+ 

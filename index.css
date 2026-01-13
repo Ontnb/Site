@@ -1,0 +1,271 @@
+/* Общие стили для всего body */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    background-color: #1A1A1A;
+    color: #808080;
+    overflow-y: scroll;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.vids-link {
+    position: fixed;
+    top: 3vh;
+    left: 10px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.sfx-link {
+    position: fixed;
+    top: 3vh;
+    left: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.contacts-link,
+.home-link {
+    position: fixed;
+    top: 3vh;
+    right: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.contacts-link {
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    position: relative;
+    padding-top: 0px;
+    padding-bottom: 8vh;
+}
+
+/* Контейнер для галереи */
+.gallery-container {
+    width: 100%;
+    display: flex;
+    overflow-x: hidden;
+}
+
+.gallery-scroll-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Контейнер для прокрутки галереи */
+.gallery-scroll {
+    display: grid;
+    grid-template-columns: repeat(19, 1fr);
+    grid-template-rows: repeat(2, auto);
+    overflow-x: scroll;
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+    padding: 1vh;
+    align-items: start;
+    margin-top: 6vh;
+    gap: 2vw;
+    scroll-behavior: auto;
+    overscroll-behavior: contain;
+}
+
+/* Стили для элемента галереи */
+.gallery-item {
+    overflow: hidden;
+    width: 40vh;
+    height: auto;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+    padding-bottom: 0px;
+    align-items: flex-start;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+    opacity: 0;
+    animation: fadeIn 4s ease forwards;
+}
+
+.gallery-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+}
+
+.gallery-link:hover {
+    transform: scale(1.05);
+}
+
+.gallery-link:active {
+    transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.photo-caption {
+    text-align: left;
+    color: #999;
+    margin: 5px 25px;
+    font-size: 0.9em;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* Скрываем модальное окно */
+    position: fixed; /* Фиксируем на экране */
+    top: 0; /* Отступ от верхнего края экрана */
+    left: 0; /* Отступ от левого края экрана */
+    width: 100%; /* Ширина 100% */
+    height: 100%; /* Высота 100% */
+    background-color: rgba(26, 26, 26, 0.8); /* Полупрозрачный темно-серый фон */
+    z-index: 1000; /* Помещаем модальное окно поверх других элементов */
+    overflow: auto; /* Добавляем прокрутку, если контент не помещается */
+    justify-content: center; /* Выравниваем по центру по горизонтали */
+    align-items: center; /* Выравниваем по центру по вертикали */
+    animation: fadeInModal 0.3s ease-out forwards; /* Анимация плавного появления */
+}
+
+/* Стили для контента модального окна */
+.modal-content {
+    position: relative; /* Относительное позиционирование */
+    background-color: #333; /* Темно-серый фон */
+    margin: 15% auto; /* Отступ сверху/снизу 15%, авто отступ слева/справа (для центрирования) */
+    padding: 20px; /* Внутренний отступ */
+    border: 1px solid #888; /* Рамка */
+    width: 80%; /* Ширина 80% */
+    max-width: 600px; /* Максимальная ширина 600px */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /* Тень */
+    animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards; /* Анимация плавного появления со смещением */
+    border-radius: 10px; /* Закругляем углы */
+    color: #f2f2f2; /* Белый цвет текста */
+}
+
+/* Стили для кнопки закрытия модального окна */
+.close-button {
+    position: absolute; /* Абсолютное позиционирование */
+    top: 0; /* Отступ от верхнего края */
+    right: 0; /* Отступ от правого края */
+    color: #f2f2f2; /* Белый цвет текста */
+    font-size: 28px; /* Размер шрифта */
+    font-weight: bold; /* Жирный шрифт */
+    cursor: pointer; /* Курсор в виде указателя */
+    padding: 10px; /* Внутренний отступ */
+    transition: color 0.2s ease; /* Плавный эффект изменения цвета */
+}
+
+/* Эффекты при наведении и фокусировке на кнопке закрытия */
+.close-button:hover,
+.close-button:focus {
+    color: white; /* Белый цвет текста */
+    text-decoration: none; /* Убираем подчеркивание */
+    cursor: pointer; /* Курсор в виде указателя */
+}
+
+/* Стили для контактной информации */
+.contact-info {
+    text-align: center; /* Выравниваем текст по центру */
+    line-height: 1.6; /* Межстрочный интервал */
+}
+
+/* Анимация плавного появления модального окна (fadeInModal) */
+@keyframes fadeInModal {
+    from { opacity: 0; } /* Начальное состояние: прозрачность 0 */
+    to { opacity: 0.8; } /* Конечное состояние: прозрачность 0.8 */
+}
+
+/* Анимация плавного появления контента (slideIn) */
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; } /* Начальное состояние: смещение вверх на 50px, прозрачность 0 */
+    to { transform: translateY(0); opacity: 1; } /* Конечное состояние: смещение 0, прозрачность 1 */
+}
+
+/* Скрытие полосы прокрутки для body в WebKit браузерах */
+body::-webkit-scrollbar {
+    width: 0;
+}
+
+/* Новые стили для горизонтального скроллбара под галереей */
+
+/* Контейнер для скроллбара */
+.scrollbar-container {
+    position: absolute;    
+    left: 30px;
+    right: 30px;
+    height: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    user-select: none;
+}
+
+/* Сам скроллбар */
+.scrollbar {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+/* Ползунок скроллбара */
+.scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20%;
+    background-color: #777;
+    border-radius: 5px;
+    cursor: grab;
+    transition: background-color 0.2s ease; /* Лёгкий переход для цвета */
+}
+
+.scrollbar-thumb:active {
+    background-color: #aaa; /* Новый цвет при удерживании */
+    cursor: grabbing; /* Меняем стиль курсора */
+}.scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20%;
+    background-color: #777;
+    border-radius: 5px;
+    cursor: grab;
+    transition: background-color 0.2s ease; /* Лёгкий переход для цвета */
+}
+
+.scrollbar-thumb:active {
+    background-color: #aaa; /* Новый цвет при удерживании */
+    cursor: grabbing; /* Меняем стиль курсора */
+}

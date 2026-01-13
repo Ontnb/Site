@@ -1,0 +1,271 @@
+/* Общие стили для body */
+body {
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 0;
+  background-color: #1A1A1A;
+  color: #808080;
+  overflow-y: hidden;
+}
+
+/* Плавная прокрутка */
+html {
+  scroll-behavior: smooth;
+}
+
+.vids-link {
+  position: fixed;
+  top: 3vh;
+  left: 10px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.sfx-link {
+    position: fixed;
+    top: 3vh;
+    left: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* Ссылка "Главная" */
+.home-link {
+  position: fixed;
+  top: 3vh;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+  right: 100px;
+}
+
+/* Ссылка "Контакты" */
+.contacts-link {
+  position: fixed;
+  top: 3vh;
+  right: 10px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: inherit;
+}
+
+/* Контейнер для портфолио */
+.portfolio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  position: relative;
+  padding-top: 0;
+  padding-bottom: 0;
+  animation: fadeIn 2s ease forwards;
+}
+
+/* Обертка для скролла портфолио */
+.portfolio-scroll-wrapper {
+  width: 100%;
+}
+
+/* Контейнер для скролла портфолио */
+.portfolio-scroll {
+  display: flex;
+  overflow-x: auto;
+  height: 76vh;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  margin-top: 6vh;
+  gap: 2vw;
+  padding: 1vh;
+}
+
+/* Элемент портфолио */
+.portfolio-item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  height: 100%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Изображение в элементе портфолио */
+.portfolio-item img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* Контейнер для видео */
+.video-container {
+  position: relative;
+  height: 76vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Видео в элементе портфолио */
+.portfolio-video {
+  width: auto; /* Ширина автоматически подстраивается */
+  height: 76vh; /* Высота как у родителя */
+  object-fit: contain;
+  border-radius: 10px;
+  background-color: black;
+  cursor: pointer;
+}
+
+/* Стили для элементов управления видео */
+.video-controls {
+  position: absolute;
+  border-radius: 10px;
+  bottom: 0;
+  width: 90%;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.0);
+  color: gray;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-controls.visible {
+  opacity: 1;
+}
+
+.video-container:hover .video-controls {
+  opacity: 1;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  flex-wrap: wrap;
+}
+
+.control-button {
+  background: none;
+  border: none;
+  color: gray;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  width: 50px;
+}
+
+.control-button:hover {
+  color: rgba(128, 128, 128, 0.5);
+}
+
+.play-pause-button i {
+  font-size: 20px;
+  color: rgba(128, 128, 128, 0.9);
+}
+
+
+/*Стили для индикатора прогресса */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(128, 128, 128, 0.3);
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background-color: rgba(128, 128, 128, 0.5);
+  border-radius: 10px;
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Стили для модального окна */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 26, 26, 0.8);
+  z-index: 1000;
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInModal 0.3s ease-out forwards;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #333;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards;
+  border-radius: 10px;
+  color: #f2f2f2;
+}
+
+/* Кнопка закрытия модального окна */
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #f2f2f2;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Контактная информация */
+.contact-info {
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Анимации */
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 0.8; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

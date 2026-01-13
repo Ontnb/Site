@@ -1,0 +1,368 @@
+/* Общие стили для body */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    background-color: #1A1A1A;
+    color: #808080;
+    overflow-y: hidden;
+}
+
+/* Плавная прокрутка */
+html {
+    scroll-behavior: smooth;
+}
+
+.pics-link {
+    position: fixed;
+    top: 3vh;
+    left: 10px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.vids-link {
+    position: fixed;
+    top: 3vh;
+    left: 100px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.contacts-link,
+.home-link {
+    position: fixed;
+    top: 3vh;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.contacts-link {
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.home-link {
+    right: 100px;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    position: relative;
+    padding-bottom: 8vh;
+}
+
+/* Контейнер для портфолио */
+.portfolio-container {
+    width: 100%;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Обертка для скролла портфолио */
+.portfolio-scroll-wrapper {
+    width: 100%;
+}
+
+/* Контейнер для скролла портфолио */
+.portfolio-scroll {
+    display: flex; /* Flexbox для горизонтальной прокрутки */
+    scrollbar-width: none; /* Скрывает стандартный ползунок прокрутки */
+    overflow-x: scroll; /* Включаем горизонтальную прокрутку */
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+    padding: 1vh;
+    align-items: start;
+    height: 85vh; /* Высота контейнера (85% высоты viewport) */
+    -webkit-overflow-scrolling: touch; /* Для плавной прокрутки на iOS */
+    scroll-behavior: auto; /* Плавная прокрутка */
+    margin-top: 6vh; /* Отступ сверху */
+    gap: 2vw; /* Расстояние между элементами (2% ширины viewport) */
+    padding: 1vh; /* Внутренний отступ */
+    overscroll-behavior: contain;
+}
+
+/* Элемент портфолио */
+.portfolio-item {
+    overflow: hidden;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Контейнер для видео */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Видео в элементе портфолио */
+.portfolio-video {
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    background-color: black;
+    animation: fadeIn 4s ease forwards;
+    cursor: pointer; /* Добавляем курсор "указатель" */
+}
+
+/* Стили для элементов управления видео */
+.video-controls {
+    position: absolute;
+    border-radius: 10px;
+    bottom: 0;
+    width: 90%;
+    justify-content: center; 
+    background-color: rgba(0, 0, 0, 0.3);
+    color: gray;
+    padding: 7px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-container:hover .video-controls {
+    opacity: 1;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    flex-wrap: wrap;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    color: gray;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    width: 50px;
+}
+
+.control-button:hover {
+    color: #ccc;
+}
+
+.play-pause-button i {
+    font-size: 20px;
+}
+
+.time-display {
+    font-size: 14px;
+}
+
+/* Стили для регулятора громкости */
+.volume-controls {
+    display: flex;
+    align-items: center;
+}
+
+/* Настройка оформления для регулятора громкости */
+/* Убираем стандартное оформление браузера */
+.volume-slider {
+    -webkit-appearance: none;
+    width: 80px;
+    height: 4px;
+    background: #808080;
+    border-radius: 2px;
+    outline: none;
+    margin-left: 5px;
+}
+
+/* Стилизация ползунка для Webkit-браузеров */
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+}
+
+/* Стилизация ползунка для Firefox */
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+}
+
+/* Стили для индикатора прогресса */
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    border-radius: 10px;
+    position: relative;
+}
+
+.progress-bar {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: 0;
+    background-color: #808080;
+    border-radius: 10px;
+}
+
+/* Стили для индикатора буферизации */
+.buffer-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+/* Подпись к фотографии */
+.photo-caption {
+    text-align: center;
+    color: #808080;
+    margin-top: 10px;
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(26, 26, 26, 0.8);
+    z-index: 1000;
+    overflow: auto;
+    justify-content: center;
+    align-items: center;
+    animation: fadeInModal 0.3s ease-out forwards;
+}
+
+/* Контент модального окна */
+.modal-content {
+    position: relative;
+    background-color: #333;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.005) forwards;
+    border-radius: 10px;
+    color: #f2f2f2;
+}
+
+/* Кнопка закрытия модального окна */
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #f2f2f2;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Стили для контактной информации */
+.contact-info {
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* Анимации для модального окна */
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 0.8; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Стили для кастомного скроллбара */
+.scrollbar-container {
+    position: absolute;
+    bottom: 50px;
+    left: 30px;
+    right: 30px;
+    height: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    user-select: none;
+}
+
+.scrollbar {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20%;
+    background-color: #777;
+    border-radius: 5px;
+    cursor: grab;
+    transition: background-color 0.2s ease;
+}
+
+.scrollbar-thumb:active {
+    background-color: #aaa;
+    cursor: grabbing;
+}
