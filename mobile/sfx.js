@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = playPauseButton.querySelector('i');
     const progressBarContainer = container.querySelector('.progress-bar-container');
     const progressBar = container.querySelector('.progress-bar');
-    const bufferBar = progressBarContainer.querySelector('.buffer-bar');
+    const bufferBar = container.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
     // ===== SEEK OVERLAY =====
@@ -90,13 +90,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function hideControls() {
+      if (isScrubbing) return; // 💥 фикс
+
       videoControls.classList.add('hidden');
       playPauseButton.classList.add('hidden');
     }
 
     function scheduleHide() {
       clearTimeout(hideControlsTimeout);
-      if (!video.paused) {
+
+      if (!video.paused && !isScrubbing) { // 💥 фикс
         hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
@@ -104,6 +107,44 @@ document.addEventListener("DOMContentLoaded", () => {
     container.addEventListener('mousemove', showControls);
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
+
+    // ===== SCRUB STATE =====
+    let isScrubbing = false;
+
+    function updateSeek(clientX) {
+      const rect = progressBarContainer.getBoundingClientRect();
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.max(0, Math.min(1, ratio));
+
+      if (video.duration) {
+        video.currentTime = ratio * video.duration;
+      }
+    }
+
+    // ===== DRAG PROGRESS =====
+    progressBarContainer.addEventListener('touchstart', (e) => {
+      isScrubbing = true;
+
+      clearTimeout(hideControlsTimeout); // 💥 фикс
+
+      e.stopPropagation();
+      showControls();
+      updateSeek(e.touches[0].clientX);
+    }, { passive: true });
+
+    progressBarContainer.addEventListener('touchmove', (e) => {
+      if (!isScrubbing) return;
+
+      clearTimeout(hideControlsTimeout); // 💥 фикс
+
+      updateSeek(e.touches[0].clientX);
+    }, { passive: true });
+
+    progressBarContainer.addEventListener('touchend', () => {
+      isScrubbing = false;
+
+      scheduleHide(); // 💥 вернуть поведение
+    });
 
     // ===== TAP =====
     let tapTimeout = null;
@@ -119,6 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     container.addEventListener('touchend', (e) => {
+      if (isScrubbing) return; // 💥 защита
+
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
 
@@ -158,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTap = now;
     });
 
-    // ===== BUTTON (FINAL FIX) =====
+    // ===== BUTTON =====
     let ignoreNextClick = false;
 
     function togglePlay() {
@@ -191,7 +234,19 @@ document.addEventListener("DOMContentLoaded", () => {
       togglePlay();
     });
 
-    // ===== PROGRESS =====
+    // ===== CLICK SEEK =====
+    progressBarContainer.addEventListener('click', (e) => {
+      showControls();
+
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+
+      if (video.duration) {
+        video.currentTime = ratio * video.duration;
+      }
+    });
+
+    // ===== UPDATE =====
     video.addEventListener('timeupdate', () => {
       if (video.duration) {
         const progress = (video.currentTime / video.duration) * 100;
@@ -201,17 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const bufferedEnd = video.buffered.end(video.buffered.length - 1);
           bufferBar.style.width = (bufferedEnd / video.duration) * 100 + '%';
         }
-      }
-    });
-
-    progressBarContainer.addEventListener('click', (e) => {
-      showControls();
-
-      const rect = progressBarContainer.getBoundingClientRect();
-      const ratio = (e.clientX - rect.left) / rect.width;
-
-      if (video.duration) {
-        video.currentTime = ratio * video.duration;
       }
     });
 
