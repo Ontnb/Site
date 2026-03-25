@@ -118,6 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let startX = 0;
     let startY = 0;
 
+    // 💥 ВАЖНО: флаг drag
+    let isDragging = false;
+    let wasDragging = false;
+
     container.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
@@ -125,16 +129,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.addEventListener('touchend', (e) => {
 
+      // 💥 ФИКС: если был drag — полностью игнорируем
+      if (wasDragging) {
+        wasDragging = false;
+        return;
+      }
+
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
 
       const moveX = Math.abs(endX - startX);
       const moveY = Math.abs(endY - startY);
 
-      // игнор скролла
       if (moveX > 10 || moveY > 10) return;
 
-      // игнор прогресс бара
       if (e.target.closest('.progress-bar-container')) return;
 
       const controlsHidden = videoControls.classList.contains('hidden');
@@ -183,7 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTap = currentTime;
     });
 
-    // ===== FIX BUTTON =====
     playPauseButton.addEventListener('touchend', (e) => {
       e.stopPropagation();
     });
@@ -233,11 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // ===== DRAG SEEK (мобильный) =====
-    let isDragging = false;
-
+    // ===== DRAG SEEK =====
     progressBarContainer.addEventListener('touchstart', (e) => {
       isDragging = true;
+      wasDragging = true;
       updateSeek(e.touches[0]);
     });
 
@@ -256,12 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const ratio = Math.max(0, Math.min(1, x / rect.width));
 
       if (video.duration) {
-  const newTime = ratio * video.duration;
-  video.currentTime = newTime;
-
-  // 💥 сразу обновляем прогресс
-  progressBar.style.width = (ratio * 100) + '%';
-}
+        const newTime = ratio * video.duration;
+        video.currentTime = newTime;
+        progressBar.style.width = (ratio * 100) + '%';
+      }
     }
 
     video.addEventListener('ended', () => {
