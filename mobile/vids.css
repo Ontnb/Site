@@ -241,3 +241,19 @@ body {
     opacity: 1;
   }
 }
+
+/* ===== iOS FIX (убираем zoom и сдвиги) ===== */
+.video-container {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.portfolio-video {
+  touch-action: manipulation;
+}
+
+/* убирает “сдвиг страницы” при свайпе */
+body {
+  overscroll-behavior: none;
+}
