@@ -30,34 +30,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== SEEK OVERLAY =====
     const seekOverlay = document.createElement('div');
-    seekOverlay.style.position = 'absolute';
-    seekOverlay.style.top = '50%';
-    seekOverlay.style.transform = 'translateY(-50%)';
-    seekOverlay.style.fontSize = '18px';
-    seekOverlay.style.color = '#808080';
-    seekOverlay.style.background = 'rgba(0,0,0,0.5)';
-    seekOverlay.style.padding = '8px 12px';
-    seekOverlay.style.borderRadius = '10px';
-    seekOverlay.style.opacity = '0';
-    seekOverlay.style.transition = 'opacity 0.25s ease';
-    seekOverlay.style.pointerEvents = 'none';
-    seekOverlay.style.zIndex = '20';
-    seekOverlay.style.display = 'flex';
-    seekOverlay.style.alignItems = 'center';
-    seekOverlay.style.gap = '6px';
+    Object.assign(seekOverlay.style, {
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      fontSize: '18px',
+      color: '#808080',
+      background: 'rgba(0,0,0,0.5)',
+      padding: '8px 12px',
+      borderRadius: '10px',
+      opacity: '0',
+      transition: 'opacity 0.25s ease',
+      pointerEvents: 'none',
+      zIndex: '20',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px'
+    });
     container.appendChild(seekOverlay);
 
     function showSeekOverlay(html, isLeft) {
       seekOverlay.innerHTML = html;
-
-      if (isLeft) {
-        seekOverlay.style.left = '20%';
-        seekOverlay.style.right = 'auto';
-      } else {
-        seekOverlay.style.right = '20%';
-        seekOverlay.style.left = 'auto';
-      }
-
+      seekOverlay.style.left = isLeft ? '20%' : 'auto';
+      seekOverlay.style.right = isLeft ? 'auto' : '20%';
       seekOverlay.style.opacity = '1';
 
       setTimeout(() => {
@@ -65,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     }
 
-    // ===== INIT =====
     if (!video.src) {
       video.src = video.getAttribute('data-src');
     }
@@ -108,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     container.addEventListener('mousemove', showControls);
-
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
@@ -122,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     container.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
-
       wasControlsHiddenOnTouchStart = videoControls.classList.contains('hidden');
     });
 
@@ -133,11 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Math.abs(endX - startX) > 10 || Math.abs(endY - startY) > 10) return;
       if (e.target.closest('.progress-bar-container')) return;
 
-      const currentTime = Date.now();
-      const tapLength = currentTime - lastTap;
+      const now = Date.now();
+      const delta = now - lastTap;
 
-      // DOUBLE TAP
-      if (tapLength < 300 && tapLength > 0) {
+      if (delta < 300 && delta > 0) {
         clearTimeout(tapTimeout);
 
         const rect = container.getBoundingClientRect();
@@ -156,35 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } else {
         tapTimeout = setTimeout(() => {
-
           if (wasControlsHiddenOnTouchStart) {
             showControls();
             return;
           }
-
-          if (video.paused) {
-            pauseOtherVideos();
-            video.play();
-            icon.classList.replace('fa-play', 'fa-pause');
-          } else {
-            video.pause();
-            icon.classList.replace('fa-pause', 'fa-play');
-          }
-
+          togglePlay();
         }, 250);
       }
 
-      lastTap = currentTime;
+      lastTap = now;
     });
 
-    // ===== BUTTON (FIXED) =====
-    playPauseButton.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    }, { passive: false });
+    // ===== BUTTON (FINAL FIX) =====
+    let ignoreNextClick = false;
 
-    playPauseButton.addEventListener('click', (e) => {
-      e.stopPropagation();
+    function togglePlay() {
       showControls();
 
       if (video.paused) {
@@ -195,9 +172,26 @@ document.addEventListener("DOMContentLoaded", () => {
         video.pause();
         icon.classList.replace('fa-pause', 'fa-play');
       }
+    }
+
+    playPauseButton.addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      ignoreNextClick = true;
+      togglePlay();
     });
 
-    // ===== PROGRESS UPDATE =====
+    playPauseButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      if (ignoreNextClick) {
+        ignoreNextClick = false;
+        return;
+      }
+
+      togglePlay();
+    });
+
+    // ===== PROGRESS =====
     video.addEventListener('timeupdate', () => {
       if (video.duration) {
         const progress = (video.currentTime / video.duration) * 100;
@@ -210,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // ===== CLICK SEEK =====
     progressBarContainer.addEventListener('click', (e) => {
       showControls();
 
