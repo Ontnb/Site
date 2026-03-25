@@ -1,27 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Элементы для управления модальным окном
   const openContactsButton = document.getElementById("open-contacts");
   const contactsModal = document.getElementById("contacts-modal");
   const closeButton = document.querySelector(".close-button");
 
-  // Открытие модального окна
   openContactsButton.addEventListener("click", () => {
     contactsModal.style.display = "flex";
   });
 
-  // Закрытие модального окна
   closeButton.addEventListener("click", () => {
     contactsModal.style.display = "none";
   });
 
-  // Закрытие модального окна при клике вне его
   window.addEventListener("click", (event) => {
     if (event.target === contactsModal) {
       contactsModal.style.display = "none";
     }
   });
 
-  // Инициализация управления видео
   const videoContainers = document.querySelectorAll('.video-container');
 
   videoContainers.forEach(container => {
@@ -30,16 +25,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = playPauseButton.querySelector('i');
     const progressBarContainer = container.querySelector('.progress-bar-container');
     const progressBar = container.querySelector('.progress-bar');
-    // Получаем элемент буферизации
     const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
-    // Устанавливаем src из data-src, если он не задан
+    // ===== ADD SEEK OVERLAY =====
+    const seekOverlay = document.createElement('div');
+    seekOverlay.style.position = 'absolute';
+    seekOverlay.style.top = '50%';
+    seekOverlay.style.left = '50%';
+    seekOverlay.style.transform = 'translate(-50%, -50%)';
+    seekOverlay.style.fontSize = '24px';
+    seekOverlay.style.color = 'white';
+    seekOverlay.style.background = 'rgba(0,0,0,0.5)';
+    seekOverlay.style.padding = '10px 15px';
+    seekOverlay.style.borderRadius = '10px';
+    seekOverlay.style.opacity = '0';
+    seekOverlay.style.transition = 'opacity 0.3s ease';
+    seekOverlay.style.pointerEvents = 'none';
+    seekOverlay.style.zIndex = '20';
+    container.appendChild(seekOverlay);
+
+    function showSeekOverlay(text) {
+      seekOverlay.textContent = text;
+      seekOverlay.style.opacity = '1';
+      setTimeout(() => {
+        seekOverlay.style.opacity = '0';
+      }, 600);
+    }
+
     if (!video.src) {
       video.src = video.getAttribute('data-src');
     }
 
-    // Заблокировать полноэкранный режим для iPhone/iPad
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       video.addEventListener('webkitbeginfullscreen', function(e) {
         e.preventDefault();
@@ -49,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Функция для остановки всех видеороликов, кроме текущего
     function pauseOtherVideos() {
       videoContainers.forEach(otherContainer => {
         const otherVideo = otherContainer.querySelector('.portfolio-video');
@@ -62,13 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Управление видимостью элементов управления
     let hideControlsTimeout;
 
     function showControls() {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
-      // Если видео воспроизводится, запускаем таймер на скрытие
       if (!video.paused) {
         scheduleHide();
       } else {
@@ -88,22 +102,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Обработчики взаимодействия – показываем элементы управления
     container.addEventListener('mousemove', showControls);
     container.addEventListener('touchstart', showControls);
 
-    // При старте воспроизведения запускаем таймер скрытия
     video.addEventListener('play', () => {
       scheduleHide();
     });
 
-    // При паузе или остановке отменяем скрытие и делаем элементы видимыми
     video.addEventListener('pause', () => {
       clearTimeout(hideControlsTimeout);
       showControls();
     });
 
-    // Управление воспроизведением и паузой по клику на центральную кнопку
     playPauseButton.addEventListener('click', (e) => {
       showControls();
       if (video.paused) {
@@ -119,23 +129,23 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
     });
 
-    // Обновление прогресс-бара и полосы буферизации в соответствии с текущим временем видео
     video.addEventListener('timeupdate', () => {
       if (video.duration) {
         const progressPercentage = (video.currentTime / video.duration) * 100;
         progressBar.style.width = progressPercentage + '%';
-        // Обновление буферной полосы
-        if (video.buffered.length > 0) {
-          const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-          const bufferPercentage = (bufferedEnd / video.duration) * 100;
-          bufferBar.style.width = bufferPercentage + '%';
-        } else {
-          bufferBar.style.width = '0%';
-        }
+
+        if (bufferBar) {
+  if (video.buffered.length > 0) {
+    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+    const bufferPercentage = (bufferedEnd / video.duration) * 100;
+    bufferBar.style.width = bufferPercentage + '%';
+  } else {
+    bufferBar.style.width = '0%';
+  }
+}
       }
     });
 
-    // Перемотка видео при клике на прогресс-бар
     progressBarContainer.addEventListener('click', (event) => {
       showControls();
       const rect = progressBarContainer.getBoundingClientRect();
@@ -146,12 +156,38 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Если видео закончилось, возвращаем иконку play и отменяем скрытие элементов
     video.addEventListener('ended', () => {
       icon.classList.remove('fa-pause');
       icon.classList.add('fa-play');
       clearTimeout(hideControlsTimeout);
       showControls();
+    });
+
+    // ===== DOUBLE TAP SEEK =====
+    let lastTap = 0;
+
+    container.addEventListener('touchend', (e) => {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+
+      if (tapLength < 300 && tapLength > 0) {
+        const rect = container.getBoundingClientRect();
+        const tapX = e.changedTouches[0].clientX - rect.left;
+
+        const isLeft = tapX < rect.width / 2;
+
+        if (video.duration) {
+          if (isLeft) {
+            video.currentTime = Math.max(0, video.currentTime - 15);
+            showSeekOverlay('⏪ 15s');
+          } else {
+            video.currentTime = Math.min(video.duration, video.currentTime + 15);
+            showSeekOverlay('15s ⏩');
+          }
+        }
+      }
+
+      lastTap = currentTime;
     });
   });
 });
