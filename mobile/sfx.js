@@ -28,42 +28,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
-    // ===== ADD SEEK OVERLAY =====
+    // ===== SEEK OVERLAY =====
     const seekOverlay = document.createElement('div');
     seekOverlay.style.position = 'absolute';
     seekOverlay.style.top = '50%';
-    seekOverlay.style.left = '50%';
-    seekOverlay.style.transform = 'translate(-50%, -50%)';
-    seekOverlay.style.fontSize = '24px';
-    seekOverlay.style.color = 'white';
+    seekOverlay.style.transform = 'translateY(-50%)';
+    seekOverlay.style.fontSize = '18px';
+    seekOverlay.style.color = '#808080';
     seekOverlay.style.background = 'rgba(0,0,0,0.5)';
-    seekOverlay.style.padding = '10px 15px';
+    seekOverlay.style.padding = '8px 12px';
     seekOverlay.style.borderRadius = '10px';
     seekOverlay.style.opacity = '0';
-    seekOverlay.style.transition = 'opacity 0.3s ease';
+    seekOverlay.style.transition = 'opacity 0.25s ease';
     seekOverlay.style.pointerEvents = 'none';
     seekOverlay.style.zIndex = '20';
+    seekOverlay.style.display = 'flex';
+    seekOverlay.style.alignItems = 'center';
+    seekOverlay.style.gap = '6px';
     container.appendChild(seekOverlay);
 
-    function showSeekOverlay(text) {
-      seekOverlay.textContent = text;
+    function showSeekOverlay(html, isLeft) {
+      seekOverlay.innerHTML = html;
+
+      if (isLeft) {
+        seekOverlay.style.left = '20%';
+        seekOverlay.style.right = 'auto';
+      } else {
+        seekOverlay.style.right = '20%';
+        seekOverlay.style.left = 'auto';
+      }
+
       seekOverlay.style.opacity = '1';
+
       setTimeout(() => {
         seekOverlay.style.opacity = '0';
-      }, 600);
+      }, 500);
     }
 
     if (!video.src) {
       video.src = video.getAttribute('data-src');
-    }
-
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      video.addEventListener('webkitbeginfullscreen', function(e) {
-        e.preventDefault();
-      });
-      if (video.requestFullscreen) {
-        video.requestFullscreen = () => Promise.reject('Fullscreen disabled on iOS');
-      }
     }
 
     function pauseOtherVideos() {
@@ -83,6 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function showControls() {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
+
+      // ❗ если контролы были скрыты — просто показать, НЕ трогать видео
       if (!video.paused) {
         scheduleHide();
       } else {
@@ -105,17 +110,75 @@ document.addEventListener("DOMContentLoaded", () => {
     container.addEventListener('mousemove', showControls);
     container.addEventListener('touchstart', showControls);
 
-    video.addEventListener('play', () => {
-      scheduleHide();
+    video.addEventListener('play', scheduleHide);
+    video.addEventListener('pause', showControls);
+
+    // ===== TAP LOGIC =====
+    let tapTimeout = null;
+    let lastTap = 0;
+
+    container.addEventListener('touchend', (e) => {
+
+      // игнор прогресс бара
+      if (e.target.closest('.progress-bar-container')) return;
+
+      const controlsHidden = videoControls.classList.contains('hidden');
+
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+
+      // двойной тап
+      if (tapLength < 300 && tapLength > 0) {
+        clearTimeout(tapTimeout);
+
+        const rect = container.getBoundingClientRect();
+        const tapX = e.changedTouches[0].clientX - rect.left;
+        const isLeft = tapX < rect.width / 2;
+
+        if (video.duration) {
+          if (isLeft) {
+            video.currentTime = Math.max(0, video.currentTime - 15);
+            showSeekOverlay('<i class="fas fa-rotate-left"></i> 15s', true);
+          } else {
+            video.currentTime = Math.min(video.duration, video.currentTime + 15);
+            showSeekOverlay('15s <i class="fas fa-rotate-right"></i>', false);
+          }
+        }
+      } else {
+        tapTimeout = setTimeout(() => {
+
+          // ✅ если контролы скрыты → просто показать
+          if (controlsHidden) {
+            showControls();
+            return;
+          }
+
+          // ✅ если контролы уже видны → play/pause
+          if (video.paused) {
+            pauseOtherVideos();
+            video.play();
+            icon.classList.remove('fa-play');
+            icon.classList.add('fa-pause');
+          } else {
+            video.pause();
+            icon.classList.remove('fa-pause');
+            icon.classList.add('fa-play');
+          }
+
+        }, 250);
+      }
+
+      lastTap = currentTime;
     });
 
-    video.addEventListener('pause', () => {
-      clearTimeout(hideControlsTimeout);
-      showControls();
+    // ===== FIX: кнопка =====
+    playPauseButton.addEventListener('touchend', (e) => {
+      e.stopPropagation(); // 💥 ВАЖНО
     });
 
     playPauseButton.addEventListener('click', (e) => {
       showControls();
+
       if (video.paused) {
         pauseOtherVideos();
         video.play();
@@ -126,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.classList.remove('fa-pause');
         icon.classList.add('fa-play');
       }
+
       e.stopPropagation();
     });
 
@@ -135,14 +199,14 @@ document.addEventListener("DOMContentLoaded", () => {
         progressBar.style.width = progressPercentage + '%';
 
         if (bufferBar) {
-  if (video.buffered.length > 0) {
-    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-    const bufferPercentage = (bufferedEnd / video.duration) * 100;
-    bufferBar.style.width = bufferPercentage + '%';
-  } else {
-    bufferBar.style.width = '0%';
-  }
-}
+          if (video.buffered.length > 0) {
+            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+            const bufferPercentage = (bufferedEnd / video.duration) * 100;
+            bufferBar.style.width = bufferPercentage + '%';
+          } else {
+            bufferBar.style.width = '0%';
+          }
+        }
       }
     });
 
@@ -161,33 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
       icon.classList.add('fa-play');
       clearTimeout(hideControlsTimeout);
       showControls();
-    });
-
-    // ===== DOUBLE TAP SEEK =====
-    let lastTap = 0;
-
-    container.addEventListener('touchend', (e) => {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-
-      if (tapLength < 300 && tapLength > 0) {
-        const rect = container.getBoundingClientRect();
-        const tapX = e.changedTouches[0].clientX - rect.left;
-
-        const isLeft = tapX < rect.width / 2;
-
-        if (video.duration) {
-          if (isLeft) {
-            video.currentTime = Math.max(0, video.currentTime - 15);
-            showSeekOverlay('⏪ 15s');
-          } else {
-            video.currentTime = Math.min(video.duration, video.currentTime + 15);
-            showSeekOverlay('15s ⏩');
-          }
-        }
-      }
-
-      lastTap = currentTime;
     });
   });
 });
