@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
-    // ===== SEEK OVERLAY (ВОЗВРАЩЕН) =====
+    // ===== SEEK OVERLAY =====
     const seekOverlay = document.createElement('div');
     seekOverlay.style.position = 'absolute';
     seekOverlay.style.top = '50%';
@@ -83,13 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== CONTROLS =====
     let hideControlsTimeout;
-    let isDragging = false;
 
     function showControls() {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
 
-      if (!video.paused && !isDragging) {
+      if (!video.paused) {
         scheduleHide();
       } else {
         clearTimeout(hideControlsTimeout);
@@ -97,21 +96,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function hideControls() {
-      if (isDragging) return;
-
       videoControls.classList.add('hidden');
       playPauseButton.classList.add('hidden');
     }
 
     function scheduleHide() {
       clearTimeout(hideControlsTimeout);
-
-      if (!video.paused && !isDragging) {
+      if (!video.paused) {
         hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
 
     container.addEventListener('mousemove', showControls);
+
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
@@ -120,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastTap = 0;
     let startX = 0;
     let startY = 0;
-    let wasDragging = false;
     let wasControlsHiddenOnTouchStart = false;
 
     container.addEventListener('touchstart', (e) => {
@@ -131,8 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     container.addEventListener('touchend', (e) => {
-      if (wasDragging) return;
-
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
 
@@ -142,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentTime = Date.now();
       const tapLength = currentTime - lastTap;
 
-      // ===== DOUBLE TAP (С ОВЕРЛЕЕМ) =====
+      // DOUBLE TAP
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
@@ -183,9 +177,14 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTap = currentTime;
     });
 
-    playPauseButton.addEventListener('touchend', (e) => e.stopPropagation());
+    // ===== BUTTON (FIXED) =====
+    playPauseButton.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, { passive: false });
 
     playPauseButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       showControls();
 
       if (video.paused) {
@@ -196,13 +195,11 @@ document.addEventListener("DOMContentLoaded", () => {
         video.pause();
         icon.classList.replace('fa-pause', 'fa-play');
       }
-
-      e.stopPropagation();
     });
 
     // ===== PROGRESS UPDATE =====
     video.addEventListener('timeupdate', () => {
-      if (video.duration && !isDragging) {
+      if (video.duration) {
         const progress = (video.currentTime / video.duration) * 100;
         progressBar.style.width = progress + '%';
 
@@ -213,50 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // ===== SEEK =====
-    let ignoreClick = false;
-
-    function updateSeek(clientX) {
-      const rect = progressBarContainer.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-
-      if (video.duration) {
-        video.currentTime = ratio * video.duration;
-        progressBar.style.width = (ratio * 100) + '%';
-      }
-    }
-
-    progressBarContainer.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-
-      isDragging = true;
-      wasDragging = true;
-      ignoreClick = true;
-
-      showControls();
-      updateSeek(e.touches[0].clientX);
-    }, { passive: false });
-
-    progressBarContainer.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-
-      e.preventDefault();
-
-      showControls();
-      updateSeek(e.touches[0].clientX);
-    }, { passive: false });
-
-    progressBarContainer.addEventListener('touchend', () => {
-      isDragging = false;
-
-      setTimeout(() => {
-        wasDragging = false;
-        ignoreClick = false;
-      }, 50);
-    });
-
+    // ===== CLICK SEEK =====
     progressBarContainer.addEventListener('click', (e) => {
-      if (ignoreClick) return;
+      showControls();
 
       const rect = progressBarContainer.getBoundingClientRect();
       const ratio = (e.clientX - rect.left) / rect.width;
