@@ -25,46 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = playPauseButton.querySelector('i');
     const progressBarContainer = container.querySelector('.progress-bar-container');
     const progressBar = container.querySelector('.progress-bar');
-    const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
-    // ===== SEEK OVERLAY =====
-    const seekOverlay = document.createElement('div');
-    seekOverlay.style.position = 'absolute';
-    seekOverlay.style.top = '50%';
-    seekOverlay.style.transform = 'translateY(-50%)';
-    seekOverlay.style.fontSize = '18px';
-    seekOverlay.style.color = '#808080';
-    seekOverlay.style.background = 'rgba(0,0,0,0.5)';
-    seekOverlay.style.padding = '8px 12px';
-    seekOverlay.style.borderRadius = '10px';
-    seekOverlay.style.opacity = '0';
-    seekOverlay.style.transition = 'opacity 0.25s ease';
-    seekOverlay.style.pointerEvents = 'none';
-    seekOverlay.style.zIndex = '20';
-    seekOverlay.style.display = 'flex';
-    seekOverlay.style.alignItems = 'center';
-    seekOverlay.style.gap = '6px';
-    container.appendChild(seekOverlay);
-
-    function showSeekOverlay(html, isLeft) {
-      seekOverlay.innerHTML = html;
-
-      if (isLeft) {
-        seekOverlay.style.left = '20%';
-        seekOverlay.style.right = 'auto';
-      } else {
-        seekOverlay.style.right = '20%';
-        seekOverlay.style.left = 'auto';
-      }
-
-      seekOverlay.style.opacity = '1';
-
-      setTimeout(() => {
-        seekOverlay.style.opacity = '0';
-      }, 500);
-    }
-
+    // ===== INIT VIDEO =====
     if (!video.src) {
       video.src = video.getAttribute('data-src');
     }
@@ -81,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // ===== CONTROLS =====
     let hideControlsTimeout;
 
     function showControls() {
@@ -107,73 +71,82 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     container.addEventListener('mousemove', showControls);
-
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
-    // ===== TAP + SCROLL FIX =====
+    // ===== YOUTUBE-STYLE SEEK =====
+    let isSeeking = false;
+
+    function updateSeek(clientX) {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const ratio = Math.max(0, Math.min(1, x / rect.width));
+
+      if (video.duration) {
+        video.currentTime = ratio * video.duration;
+        progressBar.style.width = (ratio * 100) + '%';
+      }
+    }
+
+    progressBarContainer.addEventListener('pointerdown', (e) => {
+      isSeeking = true;
+      progressBarContainer.setPointerCapture(e.pointerId);
+
+      updateSeek(e.clientX);
+    });
+
+    progressBarContainer.addEventListener('pointermove', (e) => {
+      if (!isSeeking) return;
+      updateSeek(e.clientX);
+    });
+
+    progressBarContainer.addEventListener('pointerup', (e) => {
+      isSeeking = false;
+      progressBarContainer.releasePointerCapture(e.pointerId);
+    });
+
+    progressBarContainer.addEventListener('pointercancel', () => {
+      isSeeking = false;
+    });
+
+    // ===== TAP (БЕЗ КОНФЛИКТОВ) =====
     let tapTimeout = null;
     let lastTap = 0;
-    let startX = 0;
-    let startY = 0;
-
-    let isDragging = false;
-    let wasDragging = false;
-
     let wasControlsHiddenOnTouchStart = false;
 
-    container.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
+    container.addEventListener('pointerdown', (e) => {
+      // игнорируем если жмут по прогрессу
+      if (e.target.closest('.progress-bar-container')) return;
 
       wasControlsHiddenOnTouchStart = videoControls.classList.contains('hidden');
     });
 
-    container.addEventListener('touchend', (e) => {
-
-      if (wasDragging) {
-        wasDragging = false;
-        return;
-      }
-
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-
-      const moveX = Math.abs(endX - startX);
-      const moveY = Math.abs(endY - startY);
-
-      if (moveX > 10 || moveY > 10) return;
+    container.addEventListener('pointerup', (e) => {
       if (e.target.closest('.progress-bar-container')) return;
 
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
 
-      // ===== DOUBLE TAP =====
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
         const rect = container.getBoundingClientRect();
-        const tapX = e.changedTouches[0].clientX - rect.left;
+        const tapX = e.clientX - rect.left;
         const isLeft = tapX < rect.width / 2;
 
         if (video.duration) {
           if (isLeft) {
             video.currentTime = Math.max(0, video.currentTime - 10);
-            showSeekOverlay('<i class="fas fa-rotate-left"></i> 10s', true);
           } else {
             video.currentTime = Math.min(video.duration, video.currentTime + 10);
-            showSeekOverlay('10s <i class="fas fa-rotate-right"></i>', false);
           }
         }
 
       } else {
-
         tapTimeout = setTimeout(() => {
 
-          // 💥 ГЛАВНЫЙ ФИКС
           if (wasControlsHiddenOnTouchStart) {
             showControls();
-            wasControlsHiddenOnTouchStart = false;
             return;
           }
 
@@ -188,16 +161,13 @@ document.addEventListener("DOMContentLoaded", () => {
             icon.classList.add('fa-play');
           }
 
-        }, 250);
+        }, 200);
       }
 
       lastTap = currentTime;
     });
 
-    playPauseButton.addEventListener('touchend', (e) => {
-      e.stopPropagation();
-    });
-
+    // ===== BUTTON =====
     playPauseButton.addEventListener('click', (e) => {
       showControls();
 
@@ -215,66 +185,17 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
     });
 
+    // ===== PROGRESS UPDATE =====
     video.addEventListener('timeupdate', () => {
-      if (video.duration) {
-        const progressPercentage = (video.currentTime / video.duration) * 100;
-        progressBar.style.width = progressPercentage + '%';
-
-        if (bufferBar) {
-          if (video.buffered.length > 0) {
-            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-            const bufferPercentage = (bufferedEnd / video.duration) * 100;
-            bufferBar.style.width = bufferPercentage + '%';
-          } else {
-            bufferBar.style.width = '0%';
-          }
-        }
+      if (video.duration && !isSeeking) {
+        const progress = (video.currentTime / video.duration) * 100;
+        progressBar.style.width = progress + '%';
       }
     });
-
-    // ===== CLICK SEEK =====
-    progressBarContainer.addEventListener('click', (event) => {
-      showControls();
-      const rect = progressBarContainer.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-      const ratio = clickX / rect.width;
-      if (video.duration) {
-        video.currentTime = ratio * video.duration;
-      }
-    });
-
-    // ===== DRAG SEEK =====
-    progressBarContainer.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      wasDragging = true;
-      updateSeek(e.touches[0]);
-    });
-
-    progressBarContainer.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-      updateSeek(e.touches[0]);
-    });
-
-    progressBarContainer.addEventListener('touchend', () => {
-      isDragging = false;
-    });
-
-    function updateSeek(touch) {
-      const rect = progressBarContainer.getBoundingClientRect();
-      const x = touch.clientX - rect.left;
-      const ratio = Math.max(0, Math.min(1, x / rect.width));
-
-      if (video.duration) {
-        const newTime = ratio * video.duration;
-        video.currentTime = newTime;
-        progressBar.style.width = (ratio * 100) + '%';
-      }
-    }
 
     video.addEventListener('ended', () => {
       icon.classList.remove('fa-pause');
       icon.classList.add('fa-play');
-      clearTimeout(hideControlsTimeout);
       showControls();
     });
   });
