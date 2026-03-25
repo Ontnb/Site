@@ -18,13 +18,13 @@ body {
 }
 
 .vids-link {
-    position: fixed;
-    top: 3vh;
-    left: 100px;
-    color: #808080;
-    text-decoration: none;
-    font-weight: bold;
-    z-index: 10;
+  position: fixed;
+  top: 3vh;
+  left: 100px;
+  color: #808080;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10;
 }
 
 .contacts-link,
@@ -88,7 +88,6 @@ body {
   background-color: rgba(0, 0, 0, 0);
   color: gray;
   padding: 5px;
-  /* Изначально элементы видимы */
   opacity: 1;
   transition: opacity 0.3s ease;
 }
@@ -119,6 +118,8 @@ body {
   color: #ccc;
 }
 
+/* ===== ПРОГРЕСС БАР ===== */
+
 .progress-bar-container {
   width: 97%;
   height: 8px;
@@ -126,6 +127,22 @@ body {
   cursor: pointer;
   border-radius: 10px;
   position: relative;
+}
+
+/* 💥 УВЕЛИЧЕННАЯ ЗОНА КАСАНИЯ */
+.progress-bar-container::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: 0;
+  right: 0;
+}
+
+/* 💥 ЕЩЁ БОЛЬШЕ ПРИ НАЖАТИИ (эффект “липкости”) */
+.progress-bar-container:active::before {
+  top: -16px;
+  bottom: -16px;
 }
 
 .progress-bar {
@@ -154,7 +171,6 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-  /* Изначально видны */
   opacity: 1;
   transition: opacity 0.3s ease;
 }
@@ -164,12 +180,8 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
@@ -223,12 +235,8 @@ body {
 }
 
 @keyframes fadeInModal {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 0.8;
-  }
+  from { opacity: 0; }
+  to { opacity: 0.8; }
 }
 
 @keyframes slideIn {
