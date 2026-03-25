@@ -1,22 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const openContactsButton = document.getElementById("open-contacts");
-  const contactsModal = document.getElementById("contacts-modal");
-  const closeButton = document.querySelector(".close-button");
-
-  openContactsButton.addEventListener("click", () => {
-    contactsModal.style.display = "flex";
-  });
-
-  closeButton.addEventListener("click", () => {
-    contactsModal.style.display = "none";
-  });
-
-  window.addEventListener("click", (event) => {
-    if (event.target === contactsModal) {
-      contactsModal.style.display = "none";
-    }
-  });
-
   const videoContainers = document.querySelectorAll('.video-container');
 
   videoContainers.forEach(container => {
@@ -25,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = playPauseButton.querySelector('i');
     const progressBarContainer = container.querySelector('.progress-bar-container');
     const progressBar = container.querySelector('.progress-bar');
-    const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
     // ===== SEEK OVERLAY =====
@@ -70,13 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function pauseOtherVideos() {
-      videoContainers.forEach(otherContainer => {
-        const otherVideo = otherContainer.querySelector('.portfolio-video');
-        const otherIcon = otherContainer.querySelector('.center-button i');
-        if (otherVideo !== video && !otherVideo.paused) {
-          otherVideo.pause();
-          otherIcon.classList.remove('fa-pause');
-          otherIcon.classList.add('fa-play');
+      videoContainers.forEach(other => {
+        const v = other.querySelector('.portfolio-video');
+        const i = other.querySelector('.center-button i');
+        if (v !== video && !v.paused) {
+          v.pause();
+          i.classList.replace('fa-pause', 'fa-play');
         }
       });
     }
@@ -86,12 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function showControls() {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
-
-      if (!video.paused) {
-        scheduleHide();
-      } else {
-        clearTimeout(hideControlsTimeout);
-      }
+      scheduleHide();
     }
 
     function hideControls() {
@@ -106,17 +81,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    container.addEventListener('mousemove', showControls);
-    container.addEventListener('touchstart', showControls);
-
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
-    // ===== TAP + SCROLL FIX =====
+    // =========================
+    // TAP SYSTEM
+    // =========================
+
     let tapTimeout = null;
     let lastTap = 0;
     let startX = 0;
     let startY = 0;
+    let wasDragging = false;
 
     container.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
@@ -125,23 +101,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.addEventListener('touchend', (e) => {
 
+      if (wasDragging) {
+        wasDragging = false;
+        return;
+      }
+
+      if (e.target.closest('.progress-bar-container')) return;
+
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
 
-      const moveX = Math.abs(endX - startX);
-      const moveY = Math.abs(endY - startY);
-
-      // игнор скролла
-      if (moveX > 10 || moveY > 10) return;
-
-      // игнор прогресс бара
-      if (e.target.closest('.progress-bar-container')) return;
+      if (Math.abs(endX - startX) > 10 || Math.abs(endY - startY) > 10) return;
 
       const controlsHidden = videoControls.classList.contains('hidden');
 
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
+      const now = Date.now();
+      const tapLength = now - lastTap;
 
+      // ===== DOUBLE TAP =====
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
@@ -158,7 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
             showSeekOverlay('10s <i class="fas fa-rotate-right"></i>', false);
           }
         }
+
       } else {
+        // ===== SINGLE TAP =====
         tapTimeout = setTimeout(() => {
 
           if (controlsHidden) {
@@ -169,75 +148,59 @@ document.addEventListener("DOMContentLoaded", () => {
           if (video.paused) {
             pauseOtherVideos();
             video.play();
-            icon.classList.remove('fa-play');
-            icon.classList.add('fa-pause');
+            icon.classList.replace('fa-play', 'fa-pause');
           } else {
             video.pause();
-            icon.classList.remove('fa-pause');
-            icon.classList.add('fa-play');
+            icon.classList.replace('fa-pause', 'fa-play');
           }
 
         }, 250);
       }
 
-      lastTap = currentTime;
+      lastTap = now;
     });
 
-    // ===== FIX BUTTON =====
-    playPauseButton.addEventListener('touchend', (e) => {
-      e.stopPropagation();
-    });
+    // =========================
+    // BUTTON
+    // =========================
+
+    playPauseButton.addEventListener('touchend', (e) => e.stopPropagation());
 
     playPauseButton.addEventListener('click', (e) => {
-      showControls();
-
       if (video.paused) {
         pauseOtherVideos();
         video.play();
-        icon.classList.remove('fa-play');
-        icon.classList.add('fa-pause');
+        icon.classList.replace('fa-play', 'fa-pause');
       } else {
         video.pause();
-        icon.classList.remove('fa-pause');
-        icon.classList.add('fa-play');
+        icon.classList.replace('fa-pause', 'fa-play');
       }
-
       e.stopPropagation();
     });
 
-    video.addEventListener('timeupdate', () => {
-      if (video.duration) {
-        const progressPercentage = (video.currentTime / video.duration) * 100;
-        progressBar.style.width = progressPercentage + '%';
+    // =========================
+    // SEEK CLICK
+    // =========================
 
-        if (bufferBar) {
-          if (video.buffered.length > 0) {
-            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-            const bufferPercentage = (bufferedEnd / video.duration) * 100;
-            bufferBar.style.width = bufferPercentage + '%';
-          } else {
-            bufferBar.style.width = '0%';
-          }
-        }
-      }
-    });
-
-    // ===== CLICK SEEK =====
-    progressBarContainer.addEventListener('click', (event) => {
-      showControls();
+    progressBarContainer.addEventListener('click', (e) => {
       const rect = progressBarContainer.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-      const ratio = clickX / rect.width;
+      const x = e.clientX - rect.left;
+      const ratio = x / rect.width;
+
       if (video.duration) {
         video.currentTime = ratio * video.duration;
       }
     });
 
-    // ===== DRAG SEEK (мобильный) =====
+    // =========================
+    // DRAG SEEK
+    // =========================
+
     let isDragging = false;
 
     progressBarContainer.addEventListener('touchstart', (e) => {
       isDragging = true;
+      wasDragging = true;
       updateSeek(e.touches[0]);
     });
 
@@ -256,18 +219,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const ratio = Math.max(0, Math.min(1, x / rect.width));
 
       if (video.duration) {
-  const newTime = ratio * video.duration;
-  video.currentTime = newTime;
-
-  // 💥 сразу обновляем прогресс
-  progressBar.style.width = (ratio * 100) + '%';
-}
+        video.currentTime = ratio * video.duration;
+        progressBar.style.width = (ratio * 100) + '%';
+      }
     }
 
+    // =========================
+    // PROGRESS UPDATE
+    // =========================
+
+    video.addEventListener('timeupdate', () => {
+      if (video.duration) {
+        progressBar.style.width =
+          (video.currentTime / video.duration) * 100 + '%';
+      }
+    });
+
     video.addEventListener('ended', () => {
-      icon.classList.remove('fa-pause');
-      icon.classList.add('fa-play');
-      clearTimeout(hideControlsTimeout);
+      icon.classList.replace('fa-pause', 'fa-play');
       showControls();
     });
   });
