@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const bufferBar = progressBarContainer.querySelector('.buffer-bar');
     const videoControls = container.querySelector('.video-controls');
 
+    // ===== SEEK OVERLAY (ВОЗВРАЩЕН) =====
     const seekOverlay = document.createElement('div');
     seekOverlay.style.position = 'absolute';
     seekOverlay.style.top = '50%';
@@ -64,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     }
 
+    // ===== INIT =====
     if (!video.src) {
       video.src = video.getAttribute('data-src');
     }
@@ -74,19 +76,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const otherIcon = otherContainer.querySelector('.center-button i');
         if (otherVideo !== video && !otherVideo.paused) {
           otherVideo.pause();
-          otherIcon.classList.remove('fa-pause');
-          otherIcon.classList.add('fa-play');
+          otherIcon.classList.replace('fa-pause', 'fa-play');
         }
       });
     }
 
+    // ===== CONTROLS =====
     let hideControlsTimeout;
+    let isDragging = false;
 
     function showControls() {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
 
-      if (!video.paused) {
+      if (!video.paused && !isDragging) {
         scheduleHide();
       } else {
         clearTimeout(hideControlsTimeout);
@@ -94,19 +97,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function hideControls() {
+      if (isDragging) return;
+
       videoControls.classList.add('hidden');
       playPauseButton.classList.add('hidden');
     }
 
     function scheduleHide() {
       clearTimeout(hideControlsTimeout);
-      if (!video.paused) {
+
+      if (!video.paused && !isDragging) {
         hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
 
     container.addEventListener('mousemove', showControls);
-
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
@@ -115,8 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastTap = 0;
     let startX = 0;
     let startY = 0;
-
-    let isDragging = false;
     let wasDragging = false;
     let wasControlsHiddenOnTouchStart = false;
 
@@ -139,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentTime = Date.now();
       const tapLength = currentTime - lastTap;
 
+      // ===== DOUBLE TAP (С ОВЕРЛЕЕМ) =====
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
@@ -158,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } else {
         tapTimeout = setTimeout(() => {
+
           if (wasControlsHiddenOnTouchStart) {
             showControls();
             return;
@@ -171,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
             video.pause();
             icon.classList.replace('fa-pause', 'fa-play');
           }
+
         }, 250);
       }
 
@@ -194,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
     });
 
+    // ===== PROGRESS UPDATE =====
     video.addEventListener('timeupdate', () => {
       if (video.duration && !isDragging) {
         const progress = (video.currentTime / video.duration) * 100;
@@ -206,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // ===== SEEK FIX =====
+    // ===== SEEK =====
     let ignoreClick = false;
 
     function updateSeek(clientX) {
@@ -220,19 +227,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     progressBarContainer.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+
       isDragging = true;
       wasDragging = true;
       ignoreClick = true;
 
+      showControls();
       updateSeek(e.touches[0].clientX);
-      e.preventDefault();
-    });
+    }, { passive: false });
 
     progressBarContainer.addEventListener('touchmove', (e) => {
       if (!isDragging) return;
-      updateSeek(e.touches[0].clientX);
+
       e.preventDefault();
-    });
+
+      showControls();
+      updateSeek(e.touches[0].clientX);
+    }, { passive: false });
 
     progressBarContainer.addEventListener('touchend', () => {
       isDragging = false;
