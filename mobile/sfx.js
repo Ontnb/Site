@@ -87,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
       videoControls.classList.remove('hidden');
       playPauseButton.classList.remove('hidden');
 
-      // ❗ если контролы были скрыты — просто показать, НЕ трогать видео
       if (!video.paused) {
         scheduleHide();
       } else {
@@ -113,11 +112,29 @@ document.addEventListener("DOMContentLoaded", () => {
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
 
-    // ===== TAP LOGIC =====
+    // ===== TAP + SCROLL FIX =====
     let tapTimeout = null;
     let lastTap = 0;
+    let startX = 0;
+    let startY = 0;
+
+    container.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    });
 
     container.addEventListener('touchend', (e) => {
+
+      // ❗ игнор скролла
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+
+      const moveX = Math.abs(endX - startX);
+      const moveY = Math.abs(endY - startY);
+
+      if (moveX > 10 || moveY > 10) {
+        return;
+      }
 
       // игнор прогресс бара
       if (e.target.closest('.progress-bar-container')) return;
@@ -127,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
 
-      // двойной тап
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
@@ -147,13 +163,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         tapTimeout = setTimeout(() => {
 
-          // ✅ если контролы скрыты → просто показать
           if (controlsHidden) {
             showControls();
             return;
           }
 
-          // ✅ если контролы уже видны → play/pause
           if (video.paused) {
             pauseOtherVideos();
             video.play();
@@ -171,9 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTap = currentTime;
     });
 
-    // ===== FIX: кнопка =====
     playPauseButton.addEventListener('touchend', (e) => {
-      e.stopPropagation(); // 💥 ВАЖНО
+      e.stopPropagation();
     });
 
     playPauseButton.addEventListener('click', (e) => {
