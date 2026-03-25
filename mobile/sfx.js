@@ -125,16 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.addEventListener('touchend', (e) => {
 
-      // ❗ игнор скролла
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
 
       const moveX = Math.abs(endX - startX);
       const moveY = Math.abs(endY - startY);
 
-      if (moveX > 10 || moveY > 10) {
-        return;
-      }
+      // игнор скролла
+      if (moveX > 10 || moveY > 10) return;
 
       // игнор прогресс бара
       if (e.target.closest('.progress-bar-container')) return;
@@ -153,11 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (video.duration) {
           if (isLeft) {
-            video.currentTime = Math.max(0, video.currentTime - 15);
-            showSeekOverlay('<i class="fas fa-rotate-left"></i> 15s', true);
+            video.currentTime = Math.max(0, video.currentTime - 10);
+            showSeekOverlay('<i class="fas fa-rotate-left"></i> 10s', true);
           } else {
-            video.currentTime = Math.min(video.duration, video.currentTime + 15);
-            showSeekOverlay('15s <i class="fas fa-rotate-right"></i>', false);
+            video.currentTime = Math.min(video.duration, video.currentTime + 10);
+            showSeekOverlay('10s <i class="fas fa-rotate-right"></i>', false);
           }
         }
       } else {
@@ -185,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTap = currentTime;
     });
 
+    // ===== FIX BUTTON =====
     playPauseButton.addEventListener('touchend', (e) => {
       e.stopPropagation();
     });
@@ -223,6 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // ===== CLICK SEEK =====
     progressBarContainer.addEventListener('click', (event) => {
       showControls();
       const rect = progressBarContainer.getBoundingClientRect();
@@ -232,6 +232,37 @@ document.addEventListener("DOMContentLoaded", () => {
         video.currentTime = ratio * video.duration;
       }
     });
+
+    // ===== DRAG SEEK (мобильный) =====
+    let isDragging = false;
+
+    progressBarContainer.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      updateSeek(e.touches[0]);
+    });
+
+    progressBarContainer.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      updateSeek(e.touches[0]);
+    });
+
+    progressBarContainer.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    function updateSeek(touch) {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const ratio = Math.max(0, Math.min(1, x / rect.width));
+
+      if (video.duration) {
+  const newTime = ratio * video.duration;
+  video.currentTime = newTime;
+
+  // 💥 сразу обновляем прогресс
+  progressBar.style.width = (ratio * 100) + '%';
+}
+    }
 
     video.addEventListener('ended', () => {
       icon.classList.remove('fa-pause');
