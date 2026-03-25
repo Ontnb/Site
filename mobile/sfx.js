@@ -107,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     container.addEventListener('mousemove', showControls);
-    container.addEventListener('touchstart', showControls);
 
     video.addEventListener('play', scheduleHide);
     video.addEventListener('pause', showControls);
@@ -118,18 +117,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let startX = 0;
     let startY = 0;
 
-    // 💥 ВАЖНО: флаг drag
     let isDragging = false;
     let wasDragging = false;
+
+    let wasControlsHiddenOnTouchStart = false;
 
     container.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
+
+      wasControlsHiddenOnTouchStart = videoControls.classList.contains('hidden');
     });
 
     container.addEventListener('touchend', (e) => {
 
-      // 💥 ФИКС: если был drag — полностью игнорируем
       if (wasDragging) {
         wasDragging = false;
         return;
@@ -142,14 +143,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const moveY = Math.abs(endY - startY);
 
       if (moveX > 10 || moveY > 10) return;
-
       if (e.target.closest('.progress-bar-container')) return;
-
-      const controlsHidden = videoControls.classList.contains('hidden');
 
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
 
+      // ===== DOUBLE TAP =====
       if (tapLength < 300 && tapLength > 0) {
         clearTimeout(tapTimeout);
 
@@ -166,11 +165,15 @@ document.addEventListener("DOMContentLoaded", () => {
             showSeekOverlay('10s <i class="fas fa-rotate-right"></i>', false);
           }
         }
+
       } else {
+
         tapTimeout = setTimeout(() => {
 
-          if (controlsHidden) {
+          // 💥 ГЛАВНЫЙ ФИКС
+          if (wasControlsHiddenOnTouchStart) {
             showControls();
+            wasControlsHiddenOnTouchStart = false;
             return;
           }
 
