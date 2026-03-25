@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function hideControls() {
-      if (isScrubbing) return; // 💥 фикс
+      if (isScrubbing) return;
 
       videoControls.classList.add('hidden');
       playPauseButton.classList.add('hidden');
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function scheduleHide() {
       clearTimeout(hideControlsTimeout);
 
-      if (!video.paused && !isScrubbing) { // 💥 фикс
+      if (!video.paused && !isScrubbing) {
         hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
@@ -121,29 +121,41 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ===== DRAG PROGRESS =====
+    // ===== 🔥 SMOOTH DRAG (RAF) =====
+    let rafPending = false;
+    let lastClientX = 0;
+
     progressBarContainer.addEventListener('touchstart', (e) => {
       isScrubbing = true;
-
-      clearTimeout(hideControlsTimeout); // 💥 фикс
+      clearTimeout(hideControlsTimeout);
 
       e.stopPropagation();
       showControls();
-      updateSeek(e.touches[0].clientX);
+
+      lastClientX = e.touches[0].clientX;
+      updateSeek(lastClientX);
     }, { passive: true });
 
     progressBarContainer.addEventListener('touchmove', (e) => {
       if (!isScrubbing) return;
 
-      clearTimeout(hideControlsTimeout); // 💥 фикс
+      clearTimeout(hideControlsTimeout);
 
-      updateSeek(e.touches[0].clientX);
+      lastClientX = e.touches[0].clientX;
+
+      if (!rafPending) {
+        rafPending = true;
+
+        requestAnimationFrame(() => {
+          updateSeek(lastClientX);
+          rafPending = false;
+        });
+      }
     }, { passive: true });
 
     progressBarContainer.addEventListener('touchend', () => {
       isScrubbing = false;
-
-      scheduleHide(); // 💥 вернуть поведение
+      scheduleHide();
     });
 
     // ===== TAP =====
@@ -160,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     container.addEventListener('touchend', (e) => {
-      if (isScrubbing) return; // 💥 защита
+      if (isScrubbing) return;
 
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
